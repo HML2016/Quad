@@ -1,0 +1,170 @@
+C51 COMPILER V9.00   KALMANFILTER                                                          08/11/2016 00:49:47 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE KALMANFILTER
+OBJECT MODULE PLACED IN KalmanFilter.OBJ
+COMPILER INVOKED BY: D:\STC-Keil4\C51\BIN\C51.EXE KalmanFilter.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <STC15W4K48S4.h>       //STC15W4K48S4 专用头文件
+   2          #include "KalmanFilter.h"  //卡尔曼滤波算法
+   3          
+   4          int KalmanFilter_ax( int ResrcData,int ProcessNiose_Q,int MeasureNoise_R)
+   5          {
+   6   1         int R = MeasureNoise_R;
+   7   1         int Q = ProcessNiose_Q;
+   8   1         static int ax_last;
+   9   1         int ax_mid = ax_last;
+  10   1         long ax_now;
+  11   1         static int ax_p_last;
+  12   1         long p_mid ;
+  13   1         long p_now;
+  14   1         int kg;        
+  15   1               long temp;
+  16   1         ax_mid=ax_last;
+  17   1         p_mid=ax_p_last+Q;
+  18   1               temp=p_mid<<15;
+  19   1               kg=(temp/((long)p_mid+R));
+  20   1         ax_now= ax_mid+(((long)kg*(ResrcData-ax_mid))>>15);
+  21   1         p_now=((long)p_mid*(32768-kg))>>15;      
+  22   1         ax_p_last = p_now;
+  23   1         ax_last = ax_now;
+  24   1         return ax_now;                
+  25   1       }
+  26           int KalmanFilter_ay( int ResrcData,int ProcessNiose_Q,int MeasureNoise_R)
+  27          {
+  28   1         int R = MeasureNoise_R;
+  29   1         int Q = ProcessNiose_Q;
+  30   1         static int ay_last;
+  31   1         int ay_mid = ay_last;
+  32   1         long ay_now;
+  33   1         static int ay_p_last;
+  34   1         long p_mid ;
+  35   1         long p_now;
+  36   1         int kg;        
+  37   1               long temp;
+  38   1         ay_mid=ay_last;
+  39   1         p_mid=ay_p_last+Q; 
+  40   1         temp=p_mid<<15;
+  41   1              kg=(temp/((long)p_mid+R)); 
+  42   1      
+  43   1         ay_now= ay_mid+(((long)kg*(ResrcData-ay_mid))>>15);
+  44   1         p_now=((long)p_mid*(32768-kg))>>15;       
+  45   1         ay_p_last = p_now;
+  46   1         ay_last = ay_now;
+  47   1         return ay_now;                
+  48   1       }
+  49           int KalmanFilter_az( int ResrcData,int ProcessNiose_Q,int MeasureNoise_R)
+  50          {
+  51   1         int R = MeasureNoise_R;
+  52   1         int Q = ProcessNiose_Q;
+  53   1         static int az_last;
+  54   1         int az_mid = az_last;
+  55   1         long az_now;
+C51 COMPILER V9.00   KALMANFILTER                                                          08/11/2016 00:49:47 PAGE 2   
+
+  56   1         static int az_p_last;
+  57   1         long p_mid ;
+  58   1         long p_now;
+  59   1         int kg;        
+  60   1              long temp;
+  61   1         az_mid=az_last;
+  62   1         p_mid=az_p_last+Q;
+  63   1              temp=p_mid<<15;
+  64   1              kg=(temp/((long)p_mid+R)); 
+  65   1      
+  66   1         az_now= az_mid+(((long)kg*(ResrcData-az_mid))>>15);
+  67   1         p_now=((long)p_mid*(32768-kg))>>15;      
+  68   1         az_p_last = p_now;
+  69   1         az_last = az_now;
+  70   1         return az_now;                
+  71   1       }
+  72           /*
+  73          int KalmanFilter_gyrox( int ResrcData,int ProcessNiose_Q,int MeasureNoise_R)
+  74          {
+  75             int R = MeasureNoise_R;
+  76             int Q = ProcessNiose_Q;
+  77             static int gyrox_last;
+  78             int gyrox_mid = gyrox_last;
+  79             long gyrox_now;
+  80             static int gyrox_p_last;
+  81             long gyrox_p_mid ;
+  82             long gyrox_p_now;
+  83             int gyrox_kg;        
+  84                  long gyrox_temp;
+  85             gyrox_mid=gyrox_last;
+  86             gyrox_p_mid=gyrox_p_last+Q; 
+  87                  gyrox_temp=gyrox_p_mid<<15;
+  88                  gyrox_kg=(gyrox_temp/((long)gyrox_p_mid+R));
+  89          
+  90             gyrox_now= gyrox_mid+(((long)gyrox_kg*(ResrcData-gyrox_mid))>>15);
+  91             gyrox_p_now=((long)gyrox_p_mid*(32768-gyrox_kg))>>15;     
+  92             gyrox_p_last = gyrox_p_now;
+  93             gyrox_last = gyrox_now;
+  94             return gyrox_now;                
+  95           }
+  96           int KalmanFilter_gyroy( int ResrcData,int ProcessNiose_Q,int MeasureNoise_R)
+  97          {
+  98             int R = MeasureNoise_R;
+  99             int Q = ProcessNiose_Q;
+ 100             static int gyroy_last;
+ 101             int gyroy_mid = gyroy_last;
+ 102             long gyroy_now;
+ 103             static int gyroy_p_last;
+ 104             long p_mid ;
+ 105             long p_now;
+ 106             int kg;        
+ 107                  long temp;
+ 108             gyroy_mid=gyroy_last;
+ 109             p_mid=gyroy_p_last+Q; 
+ 110                  temp=p_mid<<15;
+ 111                  kg=(temp/((long)p_mid+R)); 
+ 112          
+ 113             gyroy_now= gyroy_mid+(((long)kg*(ResrcData-gyroy_mid))>>15);
+ 114             p_now=((long)p_mid*(32768-kg))>>15;      
+ 115             gyroy_p_last = p_now;
+ 116             gyroy_last = gyroy_now;
+ 117             return gyroy_now;                
+C51 COMPILER V9.00   KALMANFILTER                                                          08/11/2016 00:49:47 PAGE 3   
+
+ 118          }
+ 119           */
+ 120          int KalmanFilter_gyroz( int ResrcData,int ProcessNiose_Q,int MeasureNoise_R)
+ 121          {
+ 122   1         int R = MeasureNoise_R;
+ 123   1         int Q = ProcessNiose_Q;
+ 124   1         static int gyroz_last;
+ 125   1         int gyroz_mid = gyroz_last;
+ 126   1         long gyroz_now;
+ 127   1         static int gyroz_p_last;
+ 128   1         long p_mid ;
+ 129   1         long p_now;
+ 130   1         int kg;        
+ 131   1         long temp;
+ 132   1         gyroz_mid=gyroz_last;
+ 133   1         p_mid=gyroz_p_last+Q;
+ 134   1         temp=p_mid<<15;
+ 135   1         kg=(temp/((long)p_mid+R)); 
+ 136   1      
+ 137   1         gyroz_now= gyroz_mid+(((long)kg*(ResrcData-gyroz_mid))>>15);
+ 138   1         p_now=((long)p_mid*(32768-kg))>>15;  
+ 139   1         gyroz_p_last = p_now;
+ 140   1         gyroz_last = gyroz_now;
+ 141   1         return gyroz_now;                
+ 142   1      }
+ 143          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1240    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     16      72
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

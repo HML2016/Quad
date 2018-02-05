@@ -1,0 +1,424 @@
+C51 COMPILER V9.00   MAIN                                                                  08/11/2016 00:49:46 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: D:\STC-Keil4\C51\BIN\C51.EXE main.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*------------------------------------------------------------
+   2          ´Ë²úÆ·ÊÇ»ùÓÚSTCºê¾§¹«Ë¾£¬ÔÚ2015Äê×îĞÂ¿ª·¢³öÒ»¿îSTC15W4K£¨IAP15W4K£©ÏµÁĞµÄ
+   3          8Î»µ¥Æ¬»ú¡£´ËÏµÁĞÔÚSTC12ÏµÁĞµÄ»ù´¡ÉÏ Ôö¼ÓÁË¿íµçÑ¹ºÍ¶àÂ·Ó²¼şPWM¹¦ÄÜ£¨15Î»£©¡£
+   4          ´ËÌõ¼şÂú×ãÁËËÄÖá·ÉĞĞµÄ»ù±¾Éè¼ÆĞèÇó£¬¾­¹ı±¾ÈË¶à·½ÃæÑ§Ï°ÓëÑĞ¾¿µÄ¹ı³ÌÖĞ£¬
+   5          ÕÆÎÕÁËÃÔÄãËÄÖáµÄ·ÉĞĞÔ­ÀíºÍÖÆ×÷¾ßÌåÒªÇóÉè¼Æ²ÎÊıµÈ¡£
+   6          
+   7          ÒÔÏÂÊÇ¡°ÎËÎËËÄÖá¡±µÄ³ÌĞò¸üÄÜËµÃ÷£º
+   8          µ¥Æ¬»ú²ÉÓÃSTC15W4K48S4-ÔöÇ¿ĞÍµ¥Æ¬»ú£¨IPAĞèĞŞ¸ÄEEPROM´úÂë£©
+   9          ¹¤×÷µçÑ¹Îª£º5V  ¾§ÕñÆµÂÊÎª£º24M ÎŞÏßÍ¨Ñ¶Ä£¿éÎª£ºLT8910
+  10          ±¾³ÌĞòÖĞ ²ÉÓÃÁËMCU6050×ö×ËÌ¬Êı¾İ²É¼¯¼ÓPIDËã·¨¸øÓ²¼ş4Â·PWM¿ØÖÆMOS¹ÜÇı¶¯¿ÕĞÄ±­µç»ú
+  11          ×¢Òâ£º´Ë³ÌĞòÖ»¼æÈİ£º¿ÕĞÄ±­716µç»úÓë45MM×¨ÓÃÕı·´½°£¨×Ô¼ºµÄµç»ú»òĞèĞŞ¸ÄPID²ÎÊı£©
+  12          ÔÚºóÆÚµÄ³ÌĞò¸üĞÂÖĞ£¬»áÔö¼ÓÓ²¼ş´úÂë´ïµ½Ô¤ÆÚ·ÉĞĞ¹¦ÄÜ¡£¾´Çë¹Ø×¢¡£
+  13          
+  14          ¿ªÔ´³ÌĞò-¹ã´óËÄÖá°®ºÃÕß¶¼¿ÉÒÔ½øĞĞĞŞ¸ÄÓë¼¼Êõ½»Á÷¡£
+  15          ÄúÈç¹ûÔÚ´Ë»ù´¡ÉÏÄÜµ÷³ö¸üºÃµÄ·ÉĞĞĞ§¹û£¬¿ÉÓëÉè¼ÆÕßÁªÏµ£¬ÓĞ·áºñÊµÎï½±ÀøÅ¶¡£
+  16          Ô­´´Éè¼ÆÕß£ºÁªÏµ·½Ê½QQ£º250278069     STCÃÔÄãËÄÖá¼¼Êõ½»Á÷Èº£º421109612
+  17          ÌÔ±¦ÍøÕ¾£ºhttp://shop117773209.taobao.com/shop/view_shop.htm?spm=a1z0e.1.0.0.eqIhKz&mytmenu=mdianpu&utkn=g
+             -,meztsobuhe3to1427461542456&user_number_id=669230514&scm=1028.1.1.20001
+  18          ÖÆ×÷Íê³ÉÊ±¼ä£º2016Äê8ÔÂ8ÈÕ-V2.0°æ
+  19          ------------------------------------------------------------*/
+  20          #include <STC15W4K48S4.h>       //STC15W4K48S4 ×¨ÓÃÍ·ÎÄ¼ş
+  21          #include <intrins.h>            //STCÌØÊâÃüÁî·ûºÅÉùÃ÷
+  22          #include <MPU6050.H>            //MPU6050Êı×ÖÍÓÂİÒÇ
+  23          #include <STC15W4K-PWM.H>       //µ¥Æ¬»úËùÓĞIO¿Ú³õÊ¼»¯-PWM¿Ú³õÊ¼»¯
+  24          #include <LT8910.h>                     //ÎŞÏß2.4GÄ£¿é
+  25          //#include <STC15W4K-ADC.h>     //STC15W4K-ADC  Ó²¼şADCÄ£Êı×ª»»
+  26          #include <IMU.H>                        //IMU·ÉĞĞºËĞÄËã·¨
+  27          #include <KalmanFilter.h>  //¿¨¶ûÂüÂË²¨Ëã·¨
+  28          
+  29          //==================================================//
+  30          //  LEDµÆ Òı½Å¶¨Òå
+  31          //==================================================//
+  32          sbit    LEDR=P0^1; //LED ºìÉ« R
+  33          sbit    LEDG=P1^7; //LED ÂÌÉ« G
+  34          sbit    LEDB=P1^6; //LED À¶É« B
+  35          
+  36          //sbit  KARX=P3^0; //ÅÅÕë½Ó¿Ú RXD
+  37          //sbit  KATX=P3^1; //ÅÅÕë½Ó¿Ú TXD
+  38          //==================================================//
+  39          //  ·ÉĞĞ¿ØÖÆ±äÁ¿
+  40          //==================================================//
+  41          unsigned char JieSuo;   //¶Ï¿ª/Á¬½Ó ½âËø±äÁ¿
+  42          unsigned char SSLL;     //Í¨Ñ¶×´Ì¬ ±äÁ¿
+  43          unsigned char ShiLian;  //Ê§Áª±äÁ¿
+  44          unsigned char SLJS;             //Ê§Áª¼ÆÊı±äÁ¿
+  45          unsigned int YouMen;    //ÓÍÃÅ±äÁ¿
+  46          unsigned int HangXiang; //º½Ïò±äÁ¿
+  47          unsigned int HengGun;   //ºá¹ö±äÁ¿
+  48          unsigned int FuYang;    //¸©Ñö±äÁ¿
+  49          unsigned char  FYHG;    //¸©Ñöºá¹ö±äÁ¿
+  50          unsigned char Xiao1;    //CRC Ëã³öĞ§Ñé°ü
+  51          unsigned char Xiao2;    //CRC ½ÓÊÕĞ§Ñé°ü
+  52          /*------------------------------------------------
+  53                            È«¾Öº¯Êı¶¨Òå
+  54          ------------------------------------------------*/
+C51 COMPILER V9.00   MAIN                                                                  08/11/2016 00:49:46 PAGE 2   
+
+  55          unsigned char data RxBuf[20]; //ÉèÖÃ½ÓÊÕ³¤¶È£¬×î¸ßÎª32×Ö½Ú
+  56          //*****************·É¿Ø¿ØÖÆ²ÎÊı**************************
+  57          unsigned int YM=0;//ÓÍÃÅ±ä»¯ËÙ¶È¿ØÖÆ£¬²»ÕâÑù×öµÄ»°¿ìËÙ±ä»¯ÓÍÃÅÊ±ËÄÖá»áÊ§ËÙ·­×ª²¢GG
+  58          int speed0=0,speed1=0,speed2=0,speed3=0;   //µç»úËÙ¶È²ÎÊı
+  59          int PWM0=0,PWM1=0,PWM2=0,PWM3=0;//¼ÓÔØÖÁPWMÄ£¿éµÄ²ÎÊı
+  60          //double g_x=0,g_y=0,g_z=0;       //ÍÓÂİÒÇ½ÃÕı²ÎÊı
+  61          char a_x=0,a_y=0,a_z=0;         //½Ç¶È½ÃÕı²ÎÊı
+  62          float IMU_gz;
+  63          //*****************MPU-6050 ¼Ä´æÆ÷Êı¾İ²ÎÊı**************************
+  64          double Gyro_y=0,Gyro_x=0,Gyro_z=0;        //YÖáÍÓÂİÒÇÊı¾İÔİ´æ
+  65          int xdata Angle_ax=0,Angle_ay=0,Angle_az=0;     //ÓÉ¼ÓËÙ¶È¼ÆËãµÄ¼ÓËÙ¶È(»¡¶ÈÖÆ)
+  66          int idata Angle_gy=0,Angle_gx=0,Angle_gz=0;     //ÓÉ½ÇËÙ¶È¼ÆËãµÄ½ÇËÙÂÊ(½Ç¶ÈÖÆ)
+  67          int data  AngleX=0,AngleY=0;                            //ËÄÔªÊı½âËã³öµÄÅ·À­½Ç  ,AngleZ=0
+  68          unsigned char data      tp[16];
+  69          //==================================================//
+  70          //   PIDËã·¨±äÁ¿
+  71          //==================================================//
+  72          float data PID_Output;                          //PID×îÖÕÊä³öÁ¿
+  73          
+  74          float xdata Last_Angle_gx=0;    //Íâ»·PIÊä³öÁ¿  ÉÏÒ»´ÎÍÓÂİÒÇÊı¾İ
+  75          float xdata Last_Angle_gy=0;
+  76          
+  77          float xdata ERRORX_In=0;                        //ÄÚ»·P ÄÚ»·I ÄÚ»·D ÄÚ»·Îó²î»ı·Ö
+  78          float xdata ERRORX_Out=0;                       //Íâ»·P Íâ»·I       Íâ»·Îó²î»ı·Ö
+  79          
+  80          float xdata ERRORY_In=0;
+  81          float xdata ERRORY_Out=0;
+  82          
+  83          float xdata ERRORZ_Out=0;
+  84          float xdata Anglezlate=0;                       //ZÖáÏà¹Ø
+  85          
+  86          float xdata Last_Ax=0;
+  87          float xdata Last_Ay=0;
+  88          
+  89          float xdata Last_gx=0;
+  90          float xdata Last_gy=0;
+  91          
+  92          /////////////////////////////////////////////////////////////
+  93          float xdata Ax=0,Ay=0;Az=0;                     //¼ÓÈëÒ£¿ØÆ÷¿ØÖÆÁ¿ºóµÄ½Ç¶È
+  94          int xdata  gx=0,gy=0;                           //¼ÓÈëÒ£¿ØÆ÷¿ØÖÆÁ¿ºóµÄ½Ç¶
+  95          long  xdata g_x_aver=0;
+  96          long  xdata g_y_aver=0;
+  97          long  xdata g_z_aver=0;
+  98          int   delta_rc_x=0;
+  99          int   delta_rc_y=0;
+ 100          int   delta_rc_z=0;
+ 101          long idata PID_P;
+ 102          long idata PID_I;
+ 103          long idata PID_D;
+ 104          
+ 105          #define Q15(X) \
+ 106             ((X < 0.0) ? (int)(32768*(X) - 0.5) : (int)(32767*(X) + 0.5))
+ 107          #define KALMAN_Q        Q15(0.20)
+ 108          #define KALMAN_R        Q15(0.80)
+ 109          //==================================================//
+ 110          //   PID ÊÖ¶¯Î¢µ÷²ÎÊıÖµ
+ 111          //   ĞŞ¸ÄPIDÒÔÏÂ²ÎÊı ¿ÉÒÔ°É·É¿Øµ÷µÄ¸ü¼ÓÆ½ÎÈ
+ 112          //   ¾ßÌåµ÷ÊÔ·½·¨¿Å²Î¿¼Ñ§Ï°×ÊÁÏ
+ 113          //==================================================//
+ 114          #define Out_XP  12.0f       //Íâ»·P
+ 115          #define Out_XI  Q15(0.12)   //Íâ»·I
+ 116          #define Out_XD  5.2f        //Íâ»·D
+C51 COMPILER V9.00   MAIN                                                                  08/11/2016 00:49:46 PAGE 3   
+
+ 117          
+ 118          #define In_XP   Q15(0.31)       //ÄÚ»·P 
+ 119          #define In_XI   Q15(0.012)      //ÄÚ»·I
+ 120          #define In_XD   4.3f            //ÄÚ»·D 
+ 121          
+ 122          
+ 123          #define Out_YP  12.0f       //Íâ»·P 
+ 124          #define Out_YI  Q15(0.12)   //Íâ»·I
+ 125          #define Out_YD  5.2f        //Íâ»·D
+ 126          
+ 127          #define In_YP   Q15(0.31)       //ÄÚ»·P
+ 128          #define In_YI   Q15(0.012)      //ÄÚ»·I
+ 129          #define In_YD   4.3f            //ÄÚ»·D
+ 130                                          
+ 131          #define ZP      5.0f                    //ZÖá P
+ 132          #define ZI  Q15(0.24)           //ZÖá I
+ 133          #define ZD      4.0f                    //ZÖá D
+ 134          
+ 135          #define ERR_MAX 800                     //»ı·ÖÏŞ·ù
+ 136          
+ 137          
+ 138          //--------------------------------------------------//
+ 139          //  ¶¨Ê±Æ÷0 ³õÊ¼»¯º¯Êı 
+ 140          //--------------------------------------------------//
+ 141          void Timer0Init(void)//12ºÁÃë@24.000MHz
+ 142          {
+ 143   1              AUXR &= 0x7F;   //¶¨Ê±Æ÷Ê±ÖÓ12TÄ£Ê½
+ 144   1              TMOD &= 0xF0;   //ÉèÖÃ¶¨Ê±Æ÷Ä£Ê½
+ 145   1              TL0 = 0x40;             //ÉèÖÃ¶¨Ê±³õÖµ
+ 146   1              TH0 = 0xA2;             //ÉèÖÃ¶¨Ê±³õÖµ
+ 147   1              TF0 = 0;                //Çå³ıTF0±êÖ¾
+ 148   1              TR0 = 1;                //¶¨Ê±Æ÷0¿ªÊ¼¼ÆÊ±
+ 149   1              ET0 = 1;        //Timer0 Interrupt Enable
+ 150   1      }
+ 151          //--------------------------------------------------//
+ 152          //  Ê±¼äÑÓÊ± º¯Êı
+ 153          //--------------------------------------------------//
+ 154          void Delay(unsigned int x)
+ 155          {unsigned int i,j;
+ 156   1              for(i=0;i<x;i++)
+ 157   1              for(j=0;j<250;j++);
+ 158   1      }
+ 159          //-------------------------------------------------//
+ 160          //  PIDËã·¨·É¿Ø×ÔÆ½ºâ º¯Êı      ¶¨Ê±Æ÷0ÖĞ¶Ï 12ºÁÃëÖ´ĞĞÒ»´Î
+ 161          //--------------------------------------------------//
+ 162          void Flight(void)  interrupt 1 
+ 163          {
+ 164   1      
+ 165   1              RX_model();                             //½ÓÊÕÄ£Ê½
+ 166   1              js_shuju(RxBuf,15);             //¶ÁÈ¡Êı¾İ°ü
+ 167   1      
+ 168   1      
+ 169   1              Read_MPU6050(tp);//Ö±½Ó¶ÁÈ¡MPU6050ÍÓÂİÒÇºÍ¼ÓËÙ¶ÈµÄÊı¾İ°ü
+ 170   1      
+ 171   1          Angle_ax=KalmanFilter_ax( ((int *)&tp)[0],KALMAN_Q,KALMAN_R);  //ÓÅ»¯Ëã·¨
+ 172   1              Angle_ay=KalmanFilter_ay( ((int *)&tp)[1],KALMAN_Q,KALMAN_R);
+ 173   1              Angle_az=KalmanFilter_az( ((int *)&tp)[2],KALMAN_Q,KALMAN_R);
+ 174   1      
+ 175   1              Angle_gx = ((float)(((int *)&tp)[4])) / 65.5;   //ÍÓÂİÒÇ´¦Àí    ½á¹ûµ¥Î»ÊÇ +-¶È
+ 176   1              Angle_gy = ((float)(((int *)&tp)[5])) / 65.5;   //ÍÓÂİÒÇÁ¿³Ì +-500¶È/S, 1¶È/Ãë ¶ÔÓ¦¶ÁÊı 65.536
+ 177   1              Angle_gz=KalmanFilter_gyroz( ((int *)&tp)[6],Q15(0.2),Q15(0.8));
+ 178   1              IMU_gz=Angle_gz/65.5;
+C51 COMPILER V9.00   MAIN                                                                  08/11/2016 00:49:46 PAGE 4   
+
+ 179   1              Last_Angle_gx = Angle_gx;               //´¢´æÉÏÒ»´Î½ÇËÙ¶ÈÊı¾İ
+ 180   1              Last_Angle_gy = Angle_gy;
+ 181   1      
+ 182   1      //*********************************** ËÄÔªÊı½âËã ***********************************
+ 183   1              IMUupdate(Angle_gx*0.0174533f, Angle_gy*0.0174533f, IMU_gz*0.0174533f, Angle_ax,Angle_ay,Angle_az);//×ËÌ¬
+             -½âËã£¬¾«¶È0.1¶È
+ 184   1              ///·¢ËÍµ½Ò£¿ØÆ÷ 
+ 185   1      //      TxBuf[0]=(AngleX+900)/0xff; // ÊıÖµÊÇ 48~1752 = 0-360¶È
+ 186   1      //      TxBuf[1]=(AngleX+900)%0xff;     // ÊıÖµÊÇ 48~1752 = 0-360¶È
+ 187   1      //      TxBuf[2]=(AngleY+900)/0xff;     // ÊıÖµÊÇ 48~1752 = 0-360¶È
+ 188   1      //      TxBuf[3]=(AngleY+900)%0xff;     // ÊıÖµÊÇ 48~1752 = 0-360¶È
+ 189   1      //****·É¿ØÊ§ÁªÅĞ¶Ï ×Ô¶¯½µÂäËã·¨***********************************************************************
+ 190   1      //½ÓÊÕÒ£¿ØÆ÷·¢À´µÄ²»¶Ï¸üĞÂÊı¾İ ÅĞ¶ÏÁª»úÍ¨Ñ¶ÊÇ·ñÕı³£
+ 191   1              if(SSLL==ShiLian)       //Èç¹ûSSLLµÄÊı¾İÃ»ÓĞ¸üĞÂ¼´Ê§Áª
+ 192   1              { if(++SLJS>=20)
+ 193   2                      {       SLJS = 19;          //×´Ì¬±êÊ¶
+ 194   3                              HangXiang=128;  //º½Ïò±äÁ¿ 
+ 195   3                              HengGun  =128;  //ºá¹ö±äÁ¿ 
+ 196   3                              FuYang   =128;  //¸©Ñö±äÁ¿
+ 197   3                              if(YM>20)YM--;//ÓÍÃÅÔÚÔ­ÖµÖğ½¥¼õĞ¡      
+ 198   3                      }
+ 199   2              }
+ 200   1              else {SLJS=0;
+ 201   2                if(YouMen>1001)YouMen=1000;//ÓÍÃÅÁ¿0-1000×î´óÖµ
+ 202   2              //ÓÍÃÅÓÅ»¯Ëã·¨ ¡¾½«ÓÍÃÅÒ¡¸ËµÄ¿ØÖÆ·ù¶È´Ó60%Ôö¼Óµ½90%¿ØÖÆËã·¨¡¿ÈçÏÂ
+ 203   2                else
+ 204   2                  {
+ 205   3                       if(YouMen>50)                     //Ò¡¸ËÁ¿ÉÏ50Ö´ĞĞ
+ 206   3                          {YM=(YouMen+300)/1.3;} //Ò¡¸ËÔö·ùËã·¨
+ 207   3                       else  YM=YouMen;                  //Ò¡¸ËµÍÓÚÖ±½Ó¸³Öµ
+ 208   3                      } 
+ 209   2               }
+ 210   1              ShiLian = SSLL; //Ê§Áª±äÁ¿¸üĞÂ
+ 211   1              YM=YouMen;
+ 212   1      //****ÇãĞ±½Ç¶È¼«ÏŞ¿ØÖÆ***********************************************************************
+ 213   1              //¼«ÏŞ½Ç¶ÈÖµ   30¶È
+ 214   1                   if((AngleX+900)>1200){LEDR=0;YM=0;}        //·É¿ØÏòÓÒÇãĞ±
+ 215   1              else if((AngleX+900)<500) {LEDR=0;YM=0;}        //·É¿ØÏò×óÇãĞ±
+ 216   1              else if((AngleY+900)>1200){LEDR=0;YM=0;}        //·É¿ØÏòÇ°ÇãĞ±
+ 217   1              else if((AngleY+900)<500) {LEDR=0;YM=0;}        //·É¿ØÏòºóÇãĞ±
+ 218   1              else LEDR=1;  //ºìÉ«
+ 219   1      
+ 220   1      //****ÒÔÏÂÊÇ·ÉĞĞ¿ØÖÆËã·¨***********************************************************************
+ 221   1      //************** MPU6050 XÖáÖ¸Ïò ***********************************************************
+ 222   1              delta_rc_x=((float)HengGun-128)*2;//µÃµ½ ºá¹öÊı¾İ±äÁ¿
+ 223   1              Ax =-AngleX-delta_rc_x+a_x*5;//
+ 224   1      //      Ax =-AngleX+a_x*5;
+ 225   1              if(YM > 20)     ERRORX_Out += Ax;       //Íâ»·»ı·Ö(ÓÍÃÅĞ¡ÓÚÄ³¸öÖµÊ±²»»ı·Ö)
+ 226   1              else            ERRORX_Out = 0;         //ÓÍÃÅĞ¡ÓÚ¶¨ÖµÊ±Çå³ı»ı·ÖÖµ
+ 227   1      
+ 228   1              if(ERRORX_Out >  ERR_MAX)       ERRORX_Out =  ERR_MAX;  //»ı·ÖÏŞ·ù
+ 229   1              else if(ERRORX_Out < -ERR_MAX)  ERRORX_Out = -ERR_MAX;  //»ı·ÖÏŞ·ù      
+ 230   1      
+ 231   1              PID_P=(long)Ax*Out_YP;
+ 232   1              PID_I=((long)ERRORX_Out*Out_XI)>>15;
+ 233   1              PID_D=((Angle_gy+Last_Angle_gy)/2)*Out_XD;
+ 234   1              PID_Output = (PID_P+PID_I+PID_D+5)/10;  //Íâ»·PID
+ 235   1      
+ 236   1              Last_Ax=Ax;
+ 237   1              gx=PID_Output - Angle_gy;          //Íâ»· -   ÍÓÂİÒÇYÖá
+ 238   1      
+ 239   1              if(YM > 20)     ERRORX_In += gx;        //ÄÚ»·»ı·Ö(ÓÍÃÅĞ¡ÓÚÄ³¸öÖµÊ±²»»ı·Ö)
+C51 COMPILER V9.00   MAIN                                                                  08/11/2016 00:49:46 PAGE 5   
+
+ 240   1              else            ERRORX_In  = 0; //ÓÍÃÅĞ¡ÓÚ¶¨ÖµÊ±Çå³ı»ı·ÖÖµ
+ 241   1      
+ 242   1              if(ERRORX_In >  ERR_MAX)        ERRORX_In =  ERR_MAX;
+ 243   1              else if(ERRORX_In < -ERR_MAX)   ERRORX_In = -ERR_MAX;   //»ı·ÖÏŞ·ù
+ 244   1      
+ 245   1              PID_P=((long)gx*In_XP)>>15;
+ 246   1              PID_I=((long)ERRORX_In*In_XI)>>15;
+ 247   1              PID_D=((long)gx - Last_gx)*In_XD;
+ 248   1              PID_Output =PID_P+PID_I+PID_D;   //ÄÚ»·PID
+ 249   1      
+ 250   1              Last_gx=gx;
+ 251   1      
+ 252   1              if(PID_Output >  1000)  PID_Output =  1000;  //Êä³öÁ¿ÏŞ·ù
+ 253   1              if(PID_Output < -1000)  PID_Output = -1000;
+ 254   1              speed0 = 0 + PID_Output;        speed1 = 0 - PID_Output;
+ 255   1              speed3 = 0 + PID_Output;        speed2 = 0 - PID_Output;
+ 256   1      //**************MPU6050 YÖáÖ¸Ïò**************************************************
+ 257   1              delta_rc_y=((float)FuYang-128)*2; //µÃµ½ ¸©ÑöÊı¾İ±äÁ¿
+ 258   1              Ay  =-AngleY-delta_rc_y-a_y*5;
+ 259   1      //      Ay  =-AngleY-a_y*5;
+ 260   1              if(YM > 20)             ERRORY_Out += Ay;                               //Íâ»·»ı·Ö(ÓÍÃÅĞ¡ÓÚÄ³¸öÖµÊ±²»»ı·Ö)
+ 261   1              else                    ERRORY_Out = 0;                                 //ÓÍÃÅĞ¡ÓÚ¶¨ÖµÊ±Çå³ı»ı·ÖÖµ
+ 262   1      
+ 263   1              if(ERRORY_Out >  ERR_MAX)       ERRORY_Out =  ERR_MAX;
+ 264   1              else if(ERRORY_Out < -ERR_MAX)  ERRORY_Out = -ERR_MAX;  //»ı·ÖÏŞ·ù
+ 265   1      
+ 266   1              PID_P=(long)Ay*Out_YP;
+ 267   1              PID_I=((long)ERRORY_Out*Out_YI)>>15;
+ 268   1              PID_D=((Angle_gx+Last_Angle_gx)/2)*Out_YD;
+ 269   1              PID_Output = (PID_P +PID_I+PID_D+5)/10; //Íâ»·PID£¬¡°+5¡±ÎªÁËËÄÉáÎåÈë±
+ 270   1      
+ 271   1              Last_Ay=Ay;
+ 272   1              gy=PID_Output - Angle_gx;
+ 273   1      
+ 274   1              if(YM > 20)ERRORY_In +=gy;//ÄÚ»·»ı·Ö(ÓÍÃÅĞ¡ÓÚÄ³¸öÖµÊ±²»»ı·Ö)
+ 275   1              else                    ERRORY_In = 0;                                                  //ÓÍÃÅĞ¡ÓÚ¶¨ÖµÊ±Çå³ı»ı·ÖÖµ
+ 276   1      
+ 277   1              if(ERRORY_In >  ERR_MAX)        ERRORY_In =  ERR_MAX;
+ 278   1              else if(ERRORY_In < -ERR_MAX)   ERRORY_In = -ERR_MAX;   //»ı·ÖÏŞ·ù
+ 279   1      
+ 280   1              PID_P=((long)gy*In_YP)>>15;
+ 281   1              PID_I=((long)ERRORY_In*In_YI)>>15;
+ 282   1              PID_D=((long)gy - Last_gy)*In_YD;
+ 283   1              PID_Output =PID_P+PID_I+PID_D;
+ 284   1      
+ 285   1              Last_gy=gy;
+ 286   1      
+ 287   1              if(PID_Output >  1000)  PID_Output =  1000;  //Êä³öÁ¿ÏŞ·ù
+ 288   1              if(PID_Output < -1000)  PID_Output = -1000;     
+ 289   1              speed0 = speed0 + PID_Output;   speed1 = speed1 + PID_Output;//¼ÓÔØµ½ËÙ¶È²ÎÊı
+ 290   1              speed3 = speed3 - PID_Output;   speed2 = speed2 - PID_Output;
+ 291   1      
+ 292   1      //************** MPU6050 ZÖáÖ¸Ïò *****************************  
+ 293   1              delta_rc_z =-Angle_gz+((float)HangXiang-128)*65+a_y*20; //µÃµ½ º½ÏòÊı¾İ±äÁ¿ ²Ù×÷Á¿      
+ 294   1              if(YM > 20)             ERRORZ_Out += delta_rc_z;
+ 295   1              else                    ERRORZ_Out  = 0; 
+ 296   1              if(ERRORZ_Out >  50000) ERRORZ_Out =  50000;
+ 297   1              else if(ERRORZ_Out < -50000)    ERRORZ_Out = -50000;    //»ı·ÖÏŞ·ù
+ 298   1              PID_P=((long)delta_rc_z)*ZP;
+ 299   1              PID_I=((long)ERRORZ_Out * ZI)>>15;
+ 300   1              PID_D=((long)delta_rc_z - Anglezlate) * ZD;
+ 301   1              PID_Output =( PID_P + PID_I + PID_D)>>6;
+C51 COMPILER V9.00   MAIN                                                                  08/11/2016 00:49:46 PAGE 6   
+
+ 302   1      
+ 303   1              Anglezlate = delta_rc_z;
+ 304   1              speed0 = speed0 + PID_Output;   speed1 = speed1 - PID_Output;
+ 305   1              speed3 = speed3 - PID_Output;   speed2 = speed2 + PID_Output;
+ 306   1      
+ 307   1      //**************½«ËÙ¶È²ÎÊı¼ÓÔØÖÁPWMÄ£¿é*************************************************        
+ 308   1              //ËÙ¶È²ÎÊı¿ØÖÆ£¬·ÀÖ¹³¬¹ıPWM²ÎÊı·¶Î§0-1000£¨XĞÍÓĞĞ§£©
+ 309   1              PWM0=(YM+speed0);if(PWM0>1000)PWM0=1000;else if(PWM0<0)PWM0=0;
+ 310   1              PWM1=(YM+speed1);if(PWM1>1000)PWM1=1000;else if(PWM1<0)PWM1=0;
+ 311   1              PWM2=(YM+speed2);if(PWM2>1000)PWM2=1000;else if(PWM2<0)PWM2=0;
+ 312   1              PWM3=(YM+speed3);if(PWM3>1000)PWM3=1000;else if(PWM3<0)PWM3=0;
+ 313   1              
+ 314   1              //Âú×ãÌõ¼ş£º£¨½âËø£º2.4G=5£»ÓÍÃÅ´óÓÚ30£©²ÅÄÜ¿ØÖÆµç»ú
+ 315   1              if(JieSuo==5&&YM>=30)
+ 316   1                {PWM(1000-PWM1,1000-PWM2,1000-PWM3,1000-PWM0);} //Æô¶¯PWM
+ 317   1              else      
+ 318   1                {PWM(1000,1000,1000,1000);}                     //¹Ø±ÕPWM
+ 319   1      } 
+ 320          //--------------------------------------------------//
+ 321          //  ³ÌĞò Ö÷º¯Êı
+ 322          //--------------------------------------------------//
+ 323          void main(void)
+ 324          {
+ 325   1              PWMGO();                //³õÊ¼»¯PWM
+ 326   1              PWM(1000,1000,1000,1000); //¹Ø±Õµç»ú
+ 327   1              LEDR=0;LEDG=1;LEDB=1;   //3¿Å×´Ì¬µÆ
+ 328   1              Delay(100);                     //ÑÓÊ±Ò»»á
+ 329   1              LEDR=1;LEDG=0;LEDB=1;   //3¿Å×´Ì¬µÆ
+ 330   1              Delay(100);                     //ÑÓÊ±Ò»»á
+ 331   1              LEDR=1;LEDG=1;LEDB=0;   //3¿Å×´Ì¬µÆ
+ 332   1              Delay(100);                     //ÑÓÊ±Ò»»á
+ 333   1              LEDR=1;LEDG=1;LEDB=1;   //3¿Å×´Ì¬µÆ
+ 334   1              Delay(10);    // ÑÓÊ± 100
+ 335   1      //---------------------------------------//
+ 336   1      //      InitADC();              //ADCÄ£Êı×ª»» ³õÊ¼»¯£¨ºóÆÚ¿ª·¢£©
+ 337   1      //      Delay(10);    // ÑÓÊ± 100
+ 338   1              Init_MPU6050(); //³õÊ¼»¯MPU-6050
+ 339   1              Delay(10);    // ÑÓÊ± 100
+ 340   1              LT8910_Init();//ÎŞÏß2.4GÄ£¿é³õÊ¼»¯
+ 341   1              Delay(100);       //ÑÓÊ±Ò»»á 1S
+ 342   1      //---------------------------------------//
+ 343   1              Timer0Init(); //³õÊ¼»¯¶¨Ê±Æ÷
+ 344   1              Delay(100);       //ÑÓÊ±Ò»»á 1S
+ 345   1      //--Ä¬ÈÏÖµ³õÊ¼»¯-------------------------------------//
+ 346   1              YouMen =0;              //³õÊ¼»¯ÓÍÃÅ±äÁ¿ 
+ 347   1              HangXiang=128;  //³õÊ¼»¯º½Ïò±äÁ¿ 
+ 348   1              HengGun =128;   //³õÊ¼»¯ºá¹ö±äÁ¿ 
+ 349   1              FuYang  =128;   //³õÊ¼»¯¸©Ñö±äÁ¿
+ 350   1              LEDB=0;  //¿ªÆôÂÌµÆ
+ 351   1              a_x=0;  // ºá¹öÊÖ¶¯Öµ 
+ 352   1              a_y=0;  // ¸©ÑöÊÖ¶¯Öµ
+ 353   1              a_z=0;  // º½ÏòÊÖ¶¯Öµ
+ 354   1      
+ 355   1      //      Flight();//±àÒëºó2¸ö¾¯¸æÊÇËµ ·É¿Øº¯ÊıÖĞ¶ÏÁ¿ ²»ÔÚÖ÷º¯ÊıÀï¡¾²»ĞèÒª¾À½á¡¿
+ 356   1              EA = 1;  //¿ª×ÜÖĞ¶Ï
+ 357   1      while(1)
+ 358   1      {
+ 359   2              //Òª·Åµ½¶¨Ê±Æ÷ÖĞ¶ÏÀïÔËĞĞ
+ 360   2      //      RX_model();                             //½ÓÊÕÄ£Ê½
+ 361   2      //      js_shuju(RxBuf,15);             //¶ÁÈ¡Êı¾İ°ü
+ 362   2      
+ 363   2              Xiao1=RxBuf[0]+RxBuf[1]+RxBuf[2]+RxBuf[3]+RxBuf[4]+RxBuf[5]+RxBuf[6]+RxBuf[7]+RxBuf[8]+RxBuf[9];
+C51 COMPILER V9.00   MAIN                                                                  08/11/2016 00:49:46 PAGE 7   
+
+ 364   2              Xiao2=RxBuf[10];
+ 365   2      
+ 366   2              if(Xiao1==Xiao2)
+ 367   2                 {
+ 368   3                      SSLL     =RxBuf[0];      //½ÓÊÕ Ê§Áª±äÁ¿
+ 369   3                      JieSuo   =RxBuf[1];      //½ÓÊÕ ÃüÁîÖµ
+ 370   3                      YouMen   =RxBuf[2]*0xff+RxBuf[3];  //½ÓÊÕ ÓÍÃÅ±äÁ¿
+ 371   3                      HangXiang=RxBuf[4];      //½ÓÊÕ º½Ïò±äÁ¿ 
+ 372   3                      HengGun  =RxBuf[5];      //½ÓÊÕ ºá¹ö±äÁ¿ 
+ 373   3                      FuYang   =RxBuf[6];      //½ÓÊÕ ¸©Ñö±äÁ¿
+ 374   3                      a_x=RxBuf[7]-128;        //¶Á³ö XÖá±£´æÖµ
+ 375   3                      a_y=RxBuf[8]-128;        //¶Á³ö YÖá±£´æÖµ
+ 376   3                      a_z=RxBuf[9]-128;        //¶Á³ö ZÖá±£´æÖµ
+ 377   3                      LEDG=1; //LED ÂÌ
+ 378   3                 }
+ 379   2               else 
+ 380   2                  LEDG=0; //LED ÂÌ
+ 381   2      
+ 382   2              if(JieSuo==1){LEDB=1;}//º½ÏòµÆ À¶É«
+ 383   2              if(JieSuo==5){LEDB=0;}//º½ÏòµÆ À¶É«
+ 384   2              Delay(3);         //ÑÓÊ±Ò»»á 
+ 385   2      /*----»ªÀöµÄ·Ö¸îÏß----»ªÀöµÄ·Ö¸îÏß----»ªÀöµÄ·Ö¸îÏß----»ªÀöµÄ·Ö¸îÏß----*/
+ 386   2              //ADCµçÑ¹µÍÑ¹¼ì²â×ÔÍ£±£»¤¹¦ÄÜ ºóÆÚ¿ª·¢
+ 387   2      }}
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   4056    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =    138    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     44    ----
+   IDATA SIZE       =     18    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,115 @@
+C51 COMPILER V9.00   IMU                                                                   08/11/2016 00:49:46 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE IMU
+OBJECT MODULE PLACED IN IMU.OBJ
+COMPILER INVOKED BY: D:\STC-Keil4\C51\BIN\C51.EXE IMU.C LARGE BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <STC15W4K48S4.h>       //STC15W4K48S4 专用头文件
+   2          #include <math.H>
+   3          #include "IMU.H"
+   4          #define pi              3.14159265f                           
+   5          #define Kp              2.0f                        
+   6          #define Ki              0.001f  
+   7          #define Kd      0.001f
+   8          #define halfT   0.005f           
+   9          
+  10          float idata q0=1,q1=0,q2=0,q3=0;   
+  11          float idata exInt=0,eyInt=0,ezInt=0;
+  12          float idata exDif=0,eyDif=0,ezDif=0;
+  13          void IMUupdate(float gx, float gy, float gz, float ax, float ay, float az)
+  14          {
+  15   1              float idata norm;
+  16   1              float idata vx, vy, vz;
+  17   1              float idata ex, ey, ez;
+  18   1              static float idata last_ex,last_ey,last_ez;
+  19   1      /*      norm = sqrt(ax*ax + ay*ay + az*az);     //把加速度计的三维向量转成单维向量   
+  20   1              ax = ax / norm;
+  21   1              ay = ay / norm;
+  22   1              az = az / norm;*/
+  23   1              norm=invSqrt(ax*ax + ay*ay + az*az) ;
+  24   1              ax = ax *norm;
+  25   1              ay = ay *norm;
+  26   1              az = az *norm;
+  27   1                      //      下面是把四元数换算成《方向余弦矩阵》中的第三列的三个元素。 
+  28   1                      //      根据余弦矩阵和欧拉角的定义，地理坐标系的重力向量，转到机体坐标系，正好是这三个元素
+  29   1                      //      所以这里的vx vy vz，其实就是当前的欧拉角（即四元数）的机体坐标参照系上，换算出来的
+  30   1                      //      重力单位向量。
+  31   1              vx = 2*(q1*q3 - q0*q2);
+  32   1              vy = 2*(q0*q1 + q2*q3);
+  33   1              vz = q0*q0 - q1*q1 - q2*q2 + q3*q3 ;
+  34   1      
+  35   1              ex = (ay*vz - az*vy) ;
+  36   1              ey = (az*vx - ax*vz) ;
+  37   1              ez = (ax*vy - ay*vx) ;
+  38   1              
+  39   1              exInt = exInt + ex * Ki;
+  40   1              eyInt = eyInt + ey * Ki;
+  41   1              ezInt = ezInt + ez * Ki;
+  42   1      
+  43   1              
+  44   1              exDif = ex-last_ex;
+  45   1              eyDif = ey-last_ey;
+  46   1              ezDif = ez-last_ez;
+  47   1              
+  48   1              last_ex = ex;
+  49   1              last_ey = ey;
+  50   1              last_ez = ez;
+  51   1              
+  52   1              gx = gx + Kp*ex + exInt + Kd*exDif;             
+  53   1              gy = gy + Kp*ey + eyInt + Kd*eyDif;             
+  54   1              gz = gz + Kp*ez + ezInt + Kd*ezDif;
+  55   1      
+C51 COMPILER V9.00   IMU                                                                   08/11/2016 00:49:46 PAGE 2   
+
+  56   1      
+  57   1              q0 = q0 + (-q1*gx - q2*gy - q3*gz) * halfT;
+  58   1              q1 = q1 + ( q0*gx + q2*gz - q3*gy) * halfT;
+  59   1              q2 = q2 + ( q0*gy - q1*gz + q3*gx) * halfT;
+  60   1              q3 = q3 + ( q0*gz + q1*gy - q2*gx) * halfT;
+  61   1      
+  62   1      /*      norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
+  63   1              q0 = q0 / norm;
+  64   1              q1 = q1 / norm;
+  65   1              q2 = q2 / norm;
+  66   1              q3 = q3 / norm;
+  67   1      */
+  68   1              norm=invSqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
+  69   1              q0 = q0*norm;
+  70   1              q1 = q1*norm;
+  71   1              q2 = q2*norm;
+  72   1              q3 = q3*norm;
+  73   1              AngleY = atan2(2 * q2 * q3 + 2 * q0 * q1, -2 * q1 * q1 - 2 * q2 * q2 + 1)* 572.957795f;
+  74   1              AngleX = asin(2*(q0*q2 - q1*q3 )) * 572.957795f; 
+  75   1              //AngleZ = atan2(2 * q1 * q2 + 2 * q0 * q3, -2 * q2 * q2 - 2 * q3 * q3 + 1)* 572.957795f;
+  76   1      
+  77   1      }
+  78          /*******************************************************************************
+  79          快速计算1/Sqrt(x)
+  80          *******************************************************************************/
+  81          float invSqrt(float x) 
+  82          {
+  83   1              float halfx = 0.5f * x;
+  84   1              float y = x;
+  85   1              long i = *(long*)&y;
+  86   1              i = 0x5f3759df - (i>>1);
+  87   1              y = *(float*)&i;
+  88   1              y = y * (1.5f - (halfx * y * y));
+  89   1              return y;
+  90   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   2427    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----      40
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =     52      28
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,93 @@
+C51 COMPILER V9.00   EEPROM                                                                08/10/2016 23:53:43 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE EEPROM
+OBJECT MODULE PLACED IN EEPROM.OBJ
+COMPILER INVOKED BY: D:\STC-Keil4\C51\BIN\C51.EXE EEPROM.C BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <STC15F2K60S2.h>       //STC15W4K48S4 专用头文件
+   2          #include <EEPROM.h>
+   3          #include <intrins.h>
+   4          #define CMD_IDLE    0            
+   5          #define CMD_READ    1              
+   6          #define CMD_PROGRAM 2               
+   7          #define CMD_ERASE   3              
+   8          #define ENABLE_IAP 0x80           //if SYSCLK<30MHz
+   9          
+  10          void Idle(void)
+  11          {
+  12   1          IAP_CONTR = 0;                 
+  13   1          IAP_CMD = 0;                    
+  14   1          IAP_TRIG = 0;                  
+  15   1          IAP_ADDRH = 0x80;              
+  16   1          IAP_ADDRL = 0;
+  17   1      }
+  18          unsigned char ReadByte(unsigned int addr) //读取1字节
+  19          {
+  20   1          unsigned char dat;                  
+  21   1          IAP_CONTR = ENABLE_IAP;       
+  22   1          IAP_CMD = CMD_READ;           
+  23   1          IAP_ADDRL = addr;             
+  24   1          IAP_ADDRH = addr >> 8;          
+  25   1          IAP_TRIG = 0x5a;             
+  26   1          IAP_TRIG = 0xa5;             
+  27   1          _nop_();                      
+  28   1          dat = IAP_DATA;
+  29   1          Idle();     
+  30   1          return dat;                   
+  31   1      }
+  32          
+  33          void ProgramByte(unsigned int addr, unsigned char dat) //写入1字节
+  34          {
+  35   1          IAP_CONTR = ENABLE_IAP;        
+  36   1          IAP_CMD = CMD_PROGRAM;        
+  37   1          IAP_ADDRL = addr;             
+  38   1          IAP_ADDRH = addr >> 8;         
+  39   1          IAP_DATA = dat;                
+  40   1          IAP_TRIG = 0x5a;              
+  41   1          IAP_TRIG = 0xa5;                
+  42   1          _nop_();    
+  43   1          Idle();     
+  44   1      }
+  45          
+  46          void EraseSector(unsigned int addr) //扇区擦除
+  47          {
+  48   1          IAP_CONTR = ENABLE_IAP;        
+  49   1          IAP_CMD = CMD_ERASE;          
+  50   1          IAP_ADDRL = addr;             
+  51   1          IAP_ADDRH = addr >> 8;         
+  52   1          IAP_TRIG = 0x5a;              
+  53   1          IAP_TRIG = 0xa5;               
+  54   1          _nop_(); 
+  55   1          Idle();     
+C51 COMPILER V9.00   EEPROM                                                                08/10/2016 23:53:43 PAGE 2   
+
+  56   1      }
+  57          void EEPROM_Xie(unsigned char *DAROM)   //将数组写入EEPROM
+  58          {
+  59   1      unsigned char i;
+  60   1      EraseSector(0); //扇区擦除
+  61   1      
+  62   1      for(i=0;i<5;i++)ProgramByte(i,DAROM[i]);;//写入数据至EEPROM
+  63   1      }
+  64          void EEPROM_Du(unsigned char *DAROM) //将数组读出EEPROM
+  65          {
+  66   1      unsigned char i;
+  67   1      for(i=0;i<5;i++)DAROM[i]=ReadByte(i);//读出数据至EEPROM
+  68   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    154    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       6
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

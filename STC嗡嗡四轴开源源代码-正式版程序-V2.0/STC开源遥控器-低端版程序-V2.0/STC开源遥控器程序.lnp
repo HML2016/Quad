@@ -1,0 +1,5 @@
+"main.obj",
+"LT8910.obj",
+"EEPROM.obj" 
+TO "STC¿ªÔ´Ò£¿ØÆ÷³ÌÐò" 
+RAMSIZE(256) 

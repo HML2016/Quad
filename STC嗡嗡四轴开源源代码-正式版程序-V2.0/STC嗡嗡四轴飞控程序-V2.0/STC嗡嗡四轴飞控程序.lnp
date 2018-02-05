@@ -1,0 +1,8 @@
+"main.obj",
+"STC15W4K-PWM.obj",
+"LT8910.obj",
+"IMU.obj",
+"MPU-6050.obj",
+"KalmanFilter.obj" 
+TO "STCнкнккджА╥и©ьЁлпР" 
+RAMSIZE(256) 

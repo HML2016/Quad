@@ -1,0 +1,182 @@
+C51 COMPILER V9.00   LT8910                                                                08/10/2016 23:53:43 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE LT8910
+OBJECT MODULE PLACED IN LT8910.OBJ
+COMPILER INVOKED BY: D:\STC-Keil4\C51\BIN\C51.EXE LT8910.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <STC15F2K60S2.h>       //STC15W4K48S4 专用头文件
+   2          #include "LT8910.h"
+   3          #define uchar unsigned char 
+   4          #define uint unsigned int
+   5          uchar RegH;
+   6          uchar RegL;
+   7          /* ====================== LT8910端口定义 ====================== */ 
+   8          sbit RST     = P3^4;
+   9          sbit SPI_SS  = P3^5;
+  10          sbit SPI_CLK = P1^5;   //SPI 时钟
+  11          sbit MOSI    = P1^4;   //从SPI 数据输入脚
+  12          sbit MISO    = P1^3;   //从SPI 数据输出脚
+  13          sbit PKT     = P3^3;
+  14          
+  15          /* ======================= us级延时函数 ======================= */ 
+  16          void Delay_us(uint n)
+  17          {
+  18   1          for(;n>0;n--);
+  19   1      }
+  20          /* ========================= 写寄存器 ========================= */ 
+  21          void SPI_WriteReg(uchar addr,uchar H,uchar L)
+  22          {
+  23   1          int i;
+  24   1          SPI_SS = 0;
+  25   1          for(i = 0; i < 8; ++ i)
+  26   1       {
+  27   2          MOSI = addr & 0x80;
+  28   2          SPI_CLK = 1; 
+  29   2          SPI_CLK = 0;
+  30   2          addr = addr << 1; 
+  31   2       }
+  32   1          for(i = 0; i < 8; ++i)
+  33   1       {
+  34   2          MOSI = H & 0x80;
+  35   2          SPI_CLK = 1;
+  36   2          SPI_CLK = 0;
+  37   2          H = H << 1;
+  38   2       }
+  39   1          for(i = 0; i < 8; ++i)
+  40   1       {  
+  41   2          MOSI = L & 0x80;
+  42   2          SPI_CLK = 1;
+  43   2          SPI_CLK = 0;
+  44   2          L = L << 1;
+  45   2       }
+  46   1          SPI_SS = 1;
+  47   1      }
+  48          /* ========================= 读寄存器 ========================= *
+  49          void SPI_ReadReg(uchar addr)
+  50          {
+  51              int i;      
+  52              SPI_SS = 0;
+  53              addr += 0x80;
+  54              for(i = 0; i < 8; ++ i)
+  55           {
+C51 COMPILER V9.00   LT8910                                                                08/10/2016 23:53:43 PAGE 2   
+
+  56              MOSI = addr & 0x80;
+  57              SPI_CLK = 1;
+  58              SPI_CLK = 0;
+  59              addr = addr << 1;
+  60           }
+  61              for(i = 0; i < 8; ++ i)
+  62           {
+  63              SPI_CLK = 1;
+  64              SPI_CLK = 0;
+  65              RegH = RegH << 1;  
+  66              RegH |= MISO;
+  67           }
+  68              for(i = 0; i < 8; ++ i)
+  69           {
+  70              SPI_CLK = 1;
+  71              SPI_CLK = 0;
+  72              RegL = RegL << 1; 
+  73              RegL |= MISO;
+  74           }
+  75              SPI_SS = 1;
+  76          }
+  77          /* ========================== 初始化 ========================== */
+  78          void LT8910_Init(void)
+  79          {
+  80   1          RST = 0;       //复位 拉低
+  81   1          Delay_us(500); //延时 500微秒
+  82   1          RST = 1;       //复位 拉高
+  83   1          Delay_us(500); //延时 500微秒
+  84   1          PKT = 1;       //收发 标志位 拉高
+  85   1          SPI_WriteReg( 0, 0x6f, 0xef );      //
+  86   1          SPI_WriteReg( 1, 0x56, 0x81 );      //
+  87   1          SPI_WriteReg( 2, 0x66, 0x17 );      //
+  88   1          SPI_WriteReg( 4, 0x9c, 0xc9 );      //
+  89   1          SPI_WriteReg( 5, 0x66, 0x37 );      //
+  90   1          SPI_WriteReg( 7, 0x00, 0x00 );      //设定RF 频道，空中频率为：f=2402+ RF_PLL_CH_NO
+  91   1          SPI_WriteReg( 8, 0x6c, 0x90 );      //
+  92   1          SPI_WriteReg( 9, 0x48, 0x00 );      //PA 增益控制 -12.2dbm
+  93   1          SPI_WriteReg(10, 0x7f, 0xfd );      //晶体振荡器
+  94   1          SPI_WriteReg(11, 0x00, 0x08 );      //RSSI
+  95   1          SPI_WriteReg(12, 0x00, 0x00 );      //校准VCO
+  96   1          SPI_WriteReg(13, 0x48, 0xbd );      //
+  97   1          SPI_WriteReg(22, 0x00, 0xff );      //
+  98   1          SPI_WriteReg(23, 0x80, 0x05 );      //
+  99   1          SPI_WriteReg(24, 0x00, 0x67 );      //
+ 100   1          SPI_WriteReg(25, 0x16, 0x59 );      //
+ 101   1          SPI_WriteReg(26, 0x19, 0xe0 );      //
+ 102   1          SPI_WriteReg(27, 0x13, 0x00 );      //
+ 103   1          SPI_WriteReg(28, 0x18, 0x00 );      //
+ 104   1          SPI_WriteReg(32, 0x58, 0x00 );      //LEN(重要参数)
+ 105   1          SPI_WriteReg(33, 0x3f, 0xc7 );      //
+ 106   1          SPI_WriteReg(34, 0x20, 0x00 );      //
+ 107   1          SPI_WriteReg(35, 0x0a, 0x00 );  //重发次数为9次 一共发送10次
+ 108   1          SPI_WriteReg(36, 0x00, 0x01 );      //SYNC_WORD[15:0]
+ 109   1          SPI_WriteReg(37, 0x00, 0x01 );      //SYNC_WORD[31:16]
+ 110   1          SPI_WriteReg(38, 0x00, 0x01 );      //SYNC_WORD[47:32]
+ 111   1          SPI_WriteReg(39, 0x00, 0x01 );      //SYNC_WORD[63:48]
+ 112   1          SPI_WriteReg(40, 0x44, 0x02 );      //FIFO 阈值
+ 113   1          SPI_WriteReg(41, 0xb8, 0x00 );  //CRC=ON;scramble=OFF;AUTO_ACK=ON
+ 114   1          SPI_WriteReg(42, 0xfd, 0xff );  //RSSI 扫描的信道数量
+ 115   1          SPI_WriteReg(43, 0x00, 0x0f );  //开始扫描RSSI
+ 116   1      //    SPI_WriteReg(44, 0x10, 0x00 );  //通讯速率 62.5Kbps~1M
+ 117   1      //    SPI_WriteReg(45, 0x04, 0x80 );  //        
+C51 COMPILER V9.00   LT8910                                                                08/10/2016 23:53:43 PAGE 3   
+
+ 118   1      }
+ 119          /* ========================= 发送字节 ========================= */ 
+ 120          void SPI_WriteReg8(uchar add,uchar H)
+ 121          {
+ 122   1          uchar i;
+ 123   1          SPI_SS = 0;
+ 124   1          for(i = 0; i < 8; ++i)
+ 125   1       {
+ 126   2          MOSI = add & 0x80;
+ 127   2          SPI_CLK = 1; 
+ 128   2          SPI_CLK = 0;
+ 129   2          add = add << 1;
+ 130   2       }
+ 131   1          for(i = 0; i < 8; ++i) 
+ 132   1       {              
+ 133   2          MOSI = H & 0x80;
+ 134   2          SPI_CLK = 1;
+ 135   2          SPI_CLK = 0;
+ 136   2          H = H << 1;
+ 137   2       }
+ 138   1          SPI_SS = 1;
+ 139   1      }
+ 140          
+ 141          /* ========================= 发送数据 ========================= */ 
+ 142          /* tx_buf：发送的数据                    Num：   发送数据总长度 */ 
+ 143          void fs_shuju(uchar *tx_buf, uchar Num)
+ 144          {
+ 145   1          uchar i=0;
+ 146   1          SPI_WriteReg(52, 0x80, 0x80);               //清空FIFO
+ 147   1          SPI_WriteReg(7,  0x00, 0x00);               //进入发送模式
+ 148   1          SPI_WriteReg(50, Num,0);                    //表示发送总字节数
+ 149   1      
+ 150   1          for(i=0;i<Num;i++)
+ 151   1              SPI_WriteReg8(50, tx_buf[i]);           //读取数据
+ 152   1      
+ 153   1          SPI_WriteReg(7, 0x01, 0x20);        //开始发送
+ 154   1          while (PKT== 0);                    //等待数据发送完成
+ 155   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    514    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

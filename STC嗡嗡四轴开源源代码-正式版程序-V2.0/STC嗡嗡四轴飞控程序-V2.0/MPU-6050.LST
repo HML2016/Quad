@@ -1,0 +1,213 @@
+C51 COMPILER V9.00   MPU_6050                                                              08/11/2016 00:49:46 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE MPU_6050
+OBJECT MODULE PLACED IN MPU-6050.OBJ
+COMPILER INVOKED BY: D:\STC-Keil4\C51\BIN\C51.EXE MPU-6050.c LARGE BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include <STC15W4K48S4.h>       //STC15W4K48S4 µ¥Æ¬»úÍ·ÎÄ¼þ
+   2          #include <intrins.h>
+   3          #include <MPU6050.H>
+   4          sbit    SCL=P3^4;       //IICÊ±ÖÓÒý½Å¶¨Òå
+   5          sbit    SDA=P3^5;       //IICÊý¾ÝÒý½Å¶¨Òå
+   6          
+   7          //**************************************
+   8          //ÑÓÊ±º¯Êý
+   9          //**************************************
+  10          
+  11          void Delay2us() 
+  12          {
+  13   1              unsigned char i;
+  14   1              i = 2;
+  15   1              while (--i);
+  16   1      }
+  17          //I^CÊ±ÐòÖÐÑÓÊ±ÉèÖÃ£¬¾ßÌå²Î¼û¸÷Ð¾Æ¬µÄÊý¾ÝÊÖ²á  6050ÍÆ¼ö×îÐ¡1.3us µ«ÊÇ»á³öÎÊÌâ£¬ÕâÀïÑÓÊ±Êµ¼Ê1.9us×óÓÒ
+  18          //**************************************
+  19          //I2CÆðÊ¼ÐÅºÅ
+  20          //**************************************
+  21          void I2C_Start(void)
+  22          {
+  23   1          SDA = 1;                    //À­¸ßÊý¾ÝÏß
+  24   1          SCL = 1;                    //À­¸ßÊ±ÖÓÏß
+  25   1          Delay2us();
+  26   1              SDA = 0;                    //²úÉúÏÂ½µÑØ
+  27   1              Delay2us(); 
+  28   1              SCL = 0;                    //À­µÍÊ±ÖÓÏß
+  29   1      }
+  30          
+  31          //**************************************
+  32          //I2CÍ£Ö¹ÐÅºÅ
+  33          //**************************************
+  34          void I2C_Stop(void)
+  35          {
+  36   1          SDA = 0;                    //À­µÍÊý¾ÝÏß
+  37   1          SCL = 1;                    //À­¸ßÊ±ÖÓÏß
+  38   1          Delay2us();
+  39   1              SDA = 1;                    //²úÉúÉÏÉýÑØ
+  40   1              Delay2us();
+  41   1      }
+  42          
+  43          //**************************************
+  44          //I2C½ÓÊÕÓ¦´ðÐÅºÅ
+  45          //**************************************
+  46          bit I2C_RecvACK(void)
+  47          {
+  48   1          SCL = 1;                    //À­¸ßÊ±ÖÓÏß±
+  49   1          Delay2us();
+  50   1              CY = SDA;                   //¶ÁÓ¦´ðÐÅºÅ
+  51   1          SCL = 0;                    //À­µÍÊ±ÖÓÏß
+  52   1          Delay2us();
+  53   1              return CY;
+  54   1      }
+  55          
+C51 COMPILER V9.00   MPU_6050                                                              08/11/2016 00:49:46 PAGE 2   
+
+  56          //**************************************
+  57          //ÏòI2C×ÜÏß·¢ËÍÒ»¸ö×Ö½ÚÊý¾Ý
+  58          //**************************************
+  59          void I2C_SendByte(unsigned char dat)
+  60          {
+  61   1          unsigned char i;
+  62   1          for (i=0; i<8; i++)         //8Î»¼ÆÊýÆ÷
+  63   1          {
+  64   2              dat <<= 1;              //ÒÆ³öÊý¾ÝµÄ×î¸ßÎ»
+  65   2              SDA = CY;               //ËÍÊý¾Ý¿Ú
+  66   2              SCL = 1;                //À­¸ßÊ±ÖÓÏß
+  67   2              Delay2us();
+  68   2                      SCL = 0;                //À­µÍÊ±ÖÓÏß
+  69   2              Delay2us();
+  70   2          }
+  71   1          I2C_RecvACK();
+  72   1      }
+  73          
+  74          //**************************************
+  75          //´ÓI2C×ÜÏß½ÓÊÕÒ»¸ö×Ö½ÚÊý¾Ý
+  76          //**************************************
+  77          unsigned char I2C_RecvByte(void)
+  78          {
+  79   1          unsigned char i;
+  80   1          unsigned char dat = 0;
+  81   1          SDA = 1;                    //Ê¹ÄÜÄÚ²¿ÉÏÀ­,×¼±¸¶ÁÈ¡Êý¾Ý,
+  82   1          for (i=0; i<8; i++)         //8Î»¼ÆÊýÆ÷
+  83   1          {
+  84   2              dat <<= 1;
+  85   2              SCL = 1;                //À­¸ßÊ±ÖÓÏß
+  86   2              Delay2us();
+  87   2                      dat |= SDA;             //¶ÁÊý¾Ý
+  88   2              SCL = 0;                //À­µÍÊ±ÖÓÏß
+  89   2                      Delay2us();
+  90   2          }
+  91   1          return dat;
+  92   1      }
+  93          
+  94          //**************************************
+  95          //ÏòI2CÉè±¸Ð´ÈëÒ»¸ö×Ö½ÚÊý¾Ý
+  96          //**************************************
+  97          void Single_WriteI2C(unsigned char REG_Address,unsigned char REG_data)
+  98          {
+  99   1          I2C_Start();                  //ÆðÊ¼ÐÅºÅ
+ 100   1          I2C_SendByte(SlaveAddress);   //·¢ËÍÉè±¸µØÖ·+Ð´ÐÅºÅ
+ 101   1          I2C_SendByte(REG_Address);    //ÄÚ²¿¼Ä´æÆ÷µØÖ·£¬
+ 102   1          I2C_SendByte(REG_data);       //ÄÚ²¿¼Ä´æÆ÷Êý¾Ý£¬
+ 103   1          I2C_Stop();                   //·¢ËÍÍ£Ö¹ÐÅºÅ
+ 104   1      }
+ 105          //**************************************
+ 106          //´ÓI2CÉè±¸¶ÁÈ¡Ò»¸ö×Ö½ÚÊý¾Ý
+ 107          //**************************************
+ 108          /*
+ 109          unsigned char Single_ReadI2C(unsigned char REG_Address)
+ 110          {
+ 111                  unsigned char REG_data;
+ 112                  I2C_Start();                   //ÆðÊ¼ÐÅºÅ
+ 113                  I2C_SendByte(SlaveAddress);    //·¢ËÍÉè±¸µØÖ·+Ð´ÐÅºÅ
+ 114                  I2C_SendByte(REG_Address);     //·¢ËÍ´æ´¢µ¥ÔªµØÖ·£¬´Ó0¿ªÊ¼
+ 115                  I2C_Start();                   //ÆðÊ¼ÐÅºÅ
+ 116                  I2C_SendByte(SlaveAddress+1);  //·¢ËÍÉè±¸µØÖ·+¶ÁÐÅºÅ
+ 117                  REG_data=I2C_RecvByte();       //¶Á³ö¼Ä´æÆ÷Êý¾Ý
+C51 COMPILER V9.00   MPU_6050                                                              08/11/2016 00:49:46 PAGE 3   
+
+ 118                  
+ 119                  SDA = 1;                    //Ð´Ó¦´ðÐÅºÅ
+ 120                  SCL = 1;                    //À­¸ßÊ±ÖÓÏß
+ 121                  Delay2us();                 //ÑÓÊ±
+ 122                  SCL = 0;                    //À­µÍÊ±ÖÓÏß
+ 123                  Delay2us();                 //ÑÓÊ±
+ 124                  
+ 125                  I2C_Stop();                    //Í£Ö¹ÐÅºÅ
+ 126                  return REG_data;
+ 127          }
+ 128          */
+ 129          
+ 130          //**************************************
+ 131          //³õÊ¼»¯MPU6050
+ 132          //**************************************
+ 133          void Init_MPU6050(void)
+ 134          {
+ 135   1              Single_WriteI2C(PWR_MGMT_1, 0x00);      //½â³ýÐÝÃß×´Ì¬
+ 136   1              Single_WriteI2C(SMPLRT_DIV, 0x07);  //ÍÓÂÝÒÇ125hz
+ 137   1              Single_WriteI2C(CONFIG, 0x04);      //21HZÂË²¨ ÑÓÊ±A8.5ms G8.3ms  ´Ë´¦È¡ÖµÓ¦Ïàµ±×¢Òâ£¬ÑÓÊ±ÓëÏµÍ³ÖÜÆÚÏà½üÎ
+             -ªÒË
+ 138   1              Single_WriteI2C(GYRO_CONFIG, 0x08); //ÍÓÂÝÒÇ500¶È/S 65.5LSB/g
+ 139   1              Single_WriteI2C(ACCEL_CONFIG, 0x18);//¼ÓËÙ¶È+-16g  8192LSB/g
+ 140   1      }
+ 141          
+ 142          //**************************************
+ 143          //ºÏ³ÉÊý¾Ý
+ 144          //**************************************
+ 145          /*
+ 146          int GetData(unsigned char REG_Address)
+ 147          {
+ 148                  char H,L;
+ 149                  H = Single_ReadI2C(REG_Address);
+ 150                  L = Single_ReadI2C(REG_Address+1);
+ 151          //      return (H<<8)+L;   //ºÏ³ÉÊý¾Ý
+ 152                  return (((u16)H << 8) + L);   //ºÏ³ÉÊý¾Ý
+ 153          }
+ 154          */
+ 155          //**************************************
+ 156          //Ö±½Ó¶ÁÈ¡Êý¾Ý
+ 157          //**************************************
+ 158          void Read_MPU6050(unsigned char *buf)
+ 159          {
+ 160   1              unsigned char   i;
+ 161   1              
+ 162   1              I2C_Start();                  //ÆðÊ¼ÐÅºÅ
+ 163   1              I2C_SendByte(SlaveAddress);   //·¢ËÍÉè±¸µØÖ·+Ð´ÐÅºÅ
+ 164   1              I2C_SendByte(ACCEL_XOUT_H);    //ÄÚ²¿¼Ä´æÆ÷µØÖ·£¬
+ 165   1              I2C_Start();                   //ÆðÊ¼ÐÅºÅ
+ 166   1              I2C_SendByte(SlaveAddress+1);  //·¢ËÍÉè±¸µØÖ·+¶ÁÐÅºÅ
+ 167   1              for(i=0; i<13; i++)
+ 168   1              {
+ 169   2                      buf[i] = I2C_RecvByte();    //¶Á³ö¼Ä´æÆ÷Êý¾Ý
+ 170   2                      SDA = 0;                    //Ð´Ó¦´ðÐÅºÅ
+ 171   2                      SCL = 1;                    //À­¸ßÊ±ÖÓÏß
+ 172   2                      Delay2us();
+ 173   2                      SCL = 0;                    //À­µÍÊ±ÖÓÏß
+ 174   2                      Delay2us();
+ 175   2              }
+ 176   1                      buf[i] = I2C_RecvByte();        //×îºóÒ»¸ö×Ö½Ú
+ 177   1                      SDA = 1;                    //Ð´·ÇÓ¦´ðÐÅºÅ
+ 178   1                      SCL = 1;                    //À­¸ßÊ±ÖÓÏß
+C51 COMPILER V9.00   MPU_6050                                                              08/11/2016 00:49:46 PAGE 4   
+
+ 179   1                      Delay2us();
+ 180   1                      SCL = 0;                    //À­µÍÊ±ÖÓÏß
+ 181   1                      Delay2us();
+ 182   1                      I2C_Stop();                    //Í£Ö¹ÐÅºÅ
+ 183   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    266    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----       3
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
